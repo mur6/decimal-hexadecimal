@@ -40,6 +40,12 @@ function listen(node, event, handler, options) {
   node.addEventListener(event, handler, options);
   return () => node.removeEventListener(event, handler, options);
 }
+function attr(node, attribute, value) {
+  if (value == null)
+    node.removeAttribute(attribute);
+  else if (node.getAttribute(attribute) !== value)
+    node.setAttribute(attribute, value);
+}
 function children(element2) {
   return Array.from(element2.childNodes);
 }
@@ -47,6 +53,9 @@ function set_data(text2, data) {
   data = "" + data;
   if (text2.wholeText !== data)
     text2.data = data;
+}
+function set_input_value(input, value) {
+  input.value = value == null ? "" : value;
 }
 let current_component;
 function set_current_component(component) {
@@ -222,4 +231,4 @@ class SvelteComponent {
   }
 }
 
-export { SvelteComponent, append, detach, element, init, insert, listen, noop, safe_not_equal, set_data, space, text };
+export { SvelteComponent, append, attr, detach, element, init, insert, listen, noop, run_all, safe_not_equal, set_data, set_input_value, space, text };

@@ -2,14 +2,17 @@
 import {
 	SvelteComponent,
 	append,
+	attr,
 	detach,
 	element,
 	init,
 	insert,
 	listen,
 	noop,
+	run_all,
 	safe_not_equal,
 	set_data,
+	set_input_value,
 	space,
 	text
 } from "../_snowpack/pkg/svelte/internal.js";
@@ -17,17 +20,29 @@ import {
 function create_fragment(ctx) {
 	let h1;
 	let t1;
-	let button;
-	let t2;
-	let t3;
-	let t4;
+	let div0;
 	let p0;
+	let t3;
+	let p1;
+	let t4;
+	let input0;
+	let p2;
+	let p3;
 	let t5;
 	let t6;
 	let t7;
+	let hr;
 	let t8;
-	let p1;
-	let t9;
+	let div1;
+	let p4;
+	let t10;
+	let p5;
+	let t11;
+	let input1;
+	let t12;
+	let p6;
+	let t13;
+	let t14;
 	let mounted;
 	let dispose;
 
@@ -36,56 +51,97 @@ function create_fragment(ctx) {
 			h1 = element("h1");
 			h1.textContent = "10進数・16進数変換ツール";
 			t1 = space();
-			button = element("button");
-			t2 = text("Count: ");
-			t3 = text(/*count*/ ctx[0]);
-			t4 = space();
+			div0 = element("div");
 			p0 = element("p");
-			t5 = text(/*count*/ ctx[0]);
-			t6 = text(" * 2 = ");
-			t7 = text(/*doubled*/ ctx[1]);
-			t8 = space();
+			p0.textContent = "10=>16 変換";
+			t3 = space();
 			p1 = element("p");
-			t9 = text(/*hex_val*/ ctx[2]);
+			t4 = text("10進数");
+			input0 = element("input");
+			p2 = element("p");
+			p3 = element("p");
+			t5 = text("16進数: ");
+			t6 = text(/*hex_converted*/ ctx[2]);
+			t7 = space();
+			hr = element("hr");
+			t8 = space();
+			div1 = element("div");
+			p4 = element("p");
+			p4.textContent = "16=>10 変換";
+			t10 = space();
+			p5 = element("p");
+			t11 = text("16進数:");
+			input1 = element("input");
+			t12 = space();
+			p6 = element("p");
+			t13 = text("10進数:");
+			t14 = text(/*decimal_converted*/ ctx[3]);
+			attr(input0, "placeholder", "0");
+			attr(input1, "placeholder", "0");
 		},
 		m(target, anchor) {
 			insert(target, h1, anchor);
 			insert(target, t1, anchor);
-			insert(target, button, anchor);
-			append(button, t2);
-			append(button, t3);
-			insert(target, t4, anchor);
-			insert(target, p0, anchor);
-			append(p0, t5);
-			append(p0, t6);
-			append(p0, t7);
+			insert(target, div0, anchor);
+			append(div0, p0);
+			append(div0, t3);
+			append(div0, p1);
+			append(p1, t4);
+			append(p1, input0);
+			set_input_value(input0, /*decimal_value*/ ctx[0]);
+			append(div0, p2);
+			append(div0, p3);
+			append(p3, t5);
+			append(p3, t6);
+			insert(target, t7, anchor);
+			insert(target, hr, anchor);
 			insert(target, t8, anchor);
-			insert(target, p1, anchor);
-			append(p1, t9);
+			insert(target, div1, anchor);
+			append(div1, p4);
+			append(div1, t10);
+			append(div1, p5);
+			append(p5, t11);
+			append(p5, input1);
+			set_input_value(input1, /*hex_value*/ ctx[1]);
+			append(div1, t12);
+			append(div1, p6);
+			append(p6, t13);
+			append(p6, t14);
 
 			if (!mounted) {
-				dispose = listen(button, "click", /*handleClick*/ ctx[3]);
+				dispose = [
+					listen(input0, "input", /*input0_input_handler*/ ctx[4]),
+					listen(input1, "input", /*input1_input_handler*/ ctx[5])
+				];
+
 				mounted = true;
 			}
 		},
 		p(ctx, [dirty]) {
-			if (dirty & /*count*/ 1) set_data(t3, /*count*/ ctx[0]);
-			if (dirty & /*count*/ 1) set_data(t5, /*count*/ ctx[0]);
-			if (dirty & /*doubled*/ 2) set_data(t7, /*doubled*/ ctx[1]);
-			if (dirty & /*hex_val*/ 4) set_data(t9, /*hex_val*/ ctx[2]);
+			if (dirty & /*decimal_value*/ 1 && input0.value !== /*decimal_value*/ ctx[0]) {
+				set_input_value(input0, /*decimal_value*/ ctx[0]);
+			}
+
+			if (dirty & /*hex_converted*/ 4) set_data(t6, /*hex_converted*/ ctx[2]);
+
+			if (dirty & /*hex_value*/ 2 && input1.value !== /*hex_value*/ ctx[1]) {
+				set_input_value(input1, /*hex_value*/ ctx[1]);
+			}
+
+			if (dirty & /*decimal_converted*/ 8) set_data(t14, /*decimal_converted*/ ctx[3]);
 		},
 		i: noop,
 		o: noop,
 		d(detaching) {
 			if (detaching) detach(h1);
 			if (detaching) detach(t1);
-			if (detaching) detach(button);
-			if (detaching) detach(t4);
-			if (detaching) detach(p0);
+			if (detaching) detach(div0);
+			if (detaching) detach(t7);
+			if (detaching) detach(hr);
 			if (detaching) detach(t8);
-			if (detaching) detach(p1);
+			if (detaching) detach(div1);
 			mounted = false;
-			dispose();
+			run_all(dispose);
 		}
 	};
 }
@@ -96,17 +152,16 @@ function convToHex(a) {
 }
 
 function convToDecimal(val) {
-	// 16進→10進
-	let s = val.toLowerCase();
-
+	const hextable = new Array("1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f");
+	let s = val.toString().toLowerCase();
 	let ret = 0;
-	let count = s.length;
+	let charLength = s.length;
 
-	for (i = 0; i < count; i++) {
-		n = s.charAt(L - i - 1);
+	for (let i = 0; i < charLength; i++) {
+		let c = s.charAt(charLength - i - 1);
 
-		for (j = 0; j < 16; j++) {
-			if (c == ar[j]) {
+		for (let j = 0; j < 16; j++) {
+			if (c == hextable[j]) {
 				ret += (j + 1) * Math.pow(16, i);
 				break;
 			}
@@ -117,26 +172,39 @@ function convToDecimal(val) {
 }
 
 function instance($$self, $$props, $$invalidate) {
-	let doubled;
-	let hex_val;
-	let count = 1;
+	let hex_converted;
+	let decimal_converted;
+	let decimal_value = 0;
+	let hex_value = 0;
 
-	function handleClick() {
-		$$invalidate(0, count += 1);
+	function input0_input_handler() {
+		decimal_value = this.value;
+		$$invalidate(0, decimal_value);
+	}
+
+	function input1_input_handler() {
+		hex_value = this.value;
+		$$invalidate(1, hex_value);
 	}
 
 	$$self.$$.update = () => {
-		if ($$self.$$.dirty & /*count*/ 1) {
-			// the `$:` means 're-run whenever these values change'
-			$: $$invalidate(1, doubled = count * 2);
+		if ($$self.$$.dirty & /*decimal_value*/ 1) {
+			$: $$invalidate(2, hex_converted = convToHex(decimal_value));
 		}
 
-		if ($$self.$$.dirty & /*count*/ 1) {
-			$: $$invalidate(2, hex_val = convToHex(count));
+		if ($$self.$$.dirty & /*hex_value*/ 2) {
+			$: $$invalidate(3, decimal_converted = convToDecimal(hex_value));
 		}
 	};
 
-	return [count, doubled, hex_val, handleClick];
+	return [
+		decimal_value,
+		hex_value,
+		hex_converted,
+		decimal_converted,
+		input0_input_handler,
+		input1_input_handler
+	];
 }
 
 class App extends SvelteComponent {
