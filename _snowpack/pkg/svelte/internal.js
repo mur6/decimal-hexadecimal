@@ -18,6 +18,9 @@ function safe_not_equal(a, b) {
 function is_empty(obj) {
   return Object.keys(obj).length === 0;
 }
+function append(target, node) {
+  target.appendChild(node);
+}
 function insert(target, node, anchor) {
   target.insertBefore(node, anchor || null);
 }
@@ -27,8 +30,23 @@ function detach(node) {
 function element(name) {
   return document.createElement(name);
 }
+function text(data) {
+  return document.createTextNode(data);
+}
+function space() {
+  return text(" ");
+}
+function listen(node, event, handler, options) {
+  node.addEventListener(event, handler, options);
+  return () => node.removeEventListener(event, handler, options);
+}
 function children(element2) {
   return Array.from(element2.childNodes);
+}
+function set_data(text2, data) {
+  data = "" + data;
+  if (text2.wholeText !== data)
+    text2.data = data;
 }
 let current_component;
 function set_current_component(component) {
@@ -204,4 +222,4 @@ class SvelteComponent {
   }
 }
 
-export { SvelteComponent, detach, element, init, insert, noop, safe_not_equal };
+export { SvelteComponent, append, detach, element, init, insert, listen, noop, safe_not_equal, set_data, space, text };
